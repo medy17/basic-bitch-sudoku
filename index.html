@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width,initial-scale=1,maximum-scale=1"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
-    <title>Sudoku</title>
+    <title>Sudoku — Responsive</title>
     <style>
       :root {
         --bg: #0f1115;
@@ -17,7 +17,6 @@
         --accent: #4c9aff;
         --accent-2: #24caa1;
         --danger: #ff6b6b;
-        --warn: #f8c24e;
         --grid: #394356;
         --grid-strong: #e8eaf0;
         --given: #2a3140;
@@ -26,16 +25,17 @@
         --same: #2b3d61;
         --conflict: #4b2232;
         --wrong: #4b2232;
-        --success: #2e7d32;
         --btn: #232839;
         --btn-hover: #2c3350;
         --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         --radius: 14px;
         --radius-sm: 10px;
+        --gap: 12px;
       }
 
       * {
         box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
 
       html,
@@ -48,13 +48,15 @@
         background: radial-gradient(1200px 800px at 20% 0%, #111423, #0b0d13),
           var(--bg);
         color: var(--text);
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-          Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        overscroll-behavior-y: contain;
+        padding-bottom: env(safe-area-inset-bottom, 0);
       }
 
       .app {
         max-width: 980px;
-        margin: 24px auto;
+        margin: 16px auto calc(16px + env(safe-area-inset-bottom));
         padding: 16px;
       }
 
@@ -62,8 +64,8 @@
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: var(--gap);
+        margin-bottom: var(--gap);
       }
 
       .brand {
@@ -129,12 +131,13 @@
         border: none;
         background: var(--btn);
         color: var(--text);
-        padding: 10px 14px;
+        padding: 12px 14px;
         border-radius: var(--radius-sm);
         cursor: pointer;
         transition: transform 0.05s ease, background 0.15s ease, opacity
           0.15s ease;
         border: 1px solid #2d3345;
+        touch-action: manipulation;
       }
 
       button:hover {
@@ -162,8 +165,8 @@
       .toolbar {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: var(--gap);
+        margin-bottom: var(--gap);
       }
 
       .panel {
@@ -177,12 +180,11 @@
       .board-wrap {
         display: grid;
         grid-template-columns: 1fr auto;
-        gap: 16px;
+        gap: var(--gap);
       }
 
       .board {
-        width: 100%;
-        max-width: 560px;
+        width: min(96vw, 620px);
         margin: 0 auto;
         aspect-ratio: 1 / 1;
         background: #0c0f17;
@@ -192,6 +194,7 @@
         display: grid;
         grid-template-columns: repeat(9, 1fr);
         grid-template-rows: repeat(9, 1fr);
+        touch-action: manipulation;
       }
 
       .cell {
@@ -204,28 +207,34 @@
         background: transparent;
         transition: background 0.1s ease, color 0.1s ease, box-shadow
           0.15s ease;
+        outline: none;
       }
 
-      /* Thick 3x3 borders */
+      /* Thick 3x3 borders (0-indexed rows/cols 2 and 5 are heavy) */
       .cell[data-col="2"],
       .cell[data-col="5"] {
         border-right: 2px solid var(--grid-strong);
-      }
-      .cell[data-col="3"],
-      .cell[data-col="6"] {
-        border-left: 1px solid var(--grid);
       }
       .cell[data-row="2"],
       .cell[data-row="5"] {
         border-bottom: 2px solid var(--grid-strong);
       }
-      .cell[data-row="3"],
-      .cell[data-row="6"] {
-        border-top: 1px solid var(--grid);
+      /* Outer border emphasis */
+      .cell[data-row="0"] {
+        border-top: 2px solid var(--grid-strong);
+      }
+      .cell[data-col="0"] {
+        border-left: 2px solid var(--grid-strong);
+      }
+      .cell[data-row="8"] {
+        border-bottom: 2px solid var(--grid-strong);
+      }
+      .cell[data-col="8"] {
+        border-right: 2px solid var(--grid-strong);
       }
 
       .num {
-        font-size: clamp(20px, 4.2vw, 32px);
+        font-size: clamp(22px, 8.6vw, 40px);
         font-weight: 800;
         letter-spacing: 0.6px;
       }
@@ -238,11 +247,11 @@
         grid-template-rows: repeat(3, 1fr);
         gap: 3px;
         pointer-events: none;
-        opacity: 0.85;
+        opacity: 0.9;
       }
 
       .note {
-        font-size: clamp(8px, 1.9vw, 12px);
+        font-size: clamp(10px, 3.1vw, 14px);
         color: var(--muted);
         display: grid;
         place-items: center;
@@ -289,7 +298,7 @@
 
       .side {
         display: grid;
-        gap: 16px;
+        gap: var(--gap);
         align-content: start;
       }
 
@@ -300,8 +309,8 @@
       }
 
       .keypad .digit {
-        padding: 12px 0;
-        font-size: 18px;
+        padding: 16px 0;
+        font-size: 20px;
         font-weight: 800;
         border-radius: 12px;
         background: #1f2536;
@@ -338,21 +347,6 @@
         flex: 0 0 auto;
       }
 
-      .stats {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .badge {
-        background: #1f2536;
-        border: 1px solid #2d3345;
-        border-radius: 10px;
-        padding: 6px 10px;
-        color: var(--muted);
-        font-weight: 700;
-      }
-
       .footer {
         margin-top: 16px;
         text-align: center;
@@ -364,7 +358,7 @@
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 20px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
         padding: 10px 14px;
         border-radius: 12px;
         background: #0b0f19;
@@ -375,6 +369,7 @@
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 20;
       }
 
       .toast.show {
@@ -382,12 +377,41 @@
         transform: translateX(-50%) translateY(-4px);
       }
 
+      /* Responsive: stack layout and make keypad sticky near bottom */
       @media (max-width: 980px) {
         .board-wrap {
           grid-template-columns: 1fr;
         }
         .right {
           justify-content: center;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .topbar {
+          grid-template-columns: 1fr;
+          justify-items: center;
+          gap: 8px;
+          text-align: center;
+        }
+        .keypad {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        /* Keep the keypad and actions handy on mobile */
+        .side > .panel:first-child {
+          position: sticky;
+          bottom: 0;
+          z-index: 10;
+          padding-bottom: calc(12px + env(safe-area-inset-bottom));
+          backdrop-filter: blur(4px);
+        }
+      }
+
+      /* Coarse pointer tweaks */
+      @media (pointer: coarse) {
+        button,
+        .cell {
+          min-height: 44px;
         }
       }
     </style>
@@ -406,7 +430,7 @@
         </div>
 
         <div class="right">
-          <select class="select" id="difficulty">
+          <select class="select" id="difficulty" aria-label="Difficulty">
             <option value="easy">Easy</option>
             <option value="medium" selected>Medium</option>
             <option value="hard">Hard</option>
@@ -419,10 +443,15 @@
 
       <div class="toolbar">
         <div class="panel board-wrap">
-          <div class="board" id="board" aria-label="Sudoku board"></div>
+          <div
+            class="board"
+            id="board"
+            role="grid"
+            aria-label="Sudoku board"
+          ></div>
 
           <div class="side">
-            <div class="panel">
+            <div class="panel" id="controlsPanel">
               <div class="row" style="margin-bottom: 8px">
                 <button class="toggle" id="noteMode">Notes</button>
                 <button class="toggle" id="autoNotes">Auto-notes</button>
@@ -434,9 +463,7 @@
                 </button>
               </div>
 
-              <div class="keypad" id="keypad">
-                <!-- Digits 1..9 + 0 (clear), laid out dynamically -->
-              </div>
+              <div class="keypad" id="keypad"></div>
 
               <div class="row" style="margin-top: 8px">
                 <button id="undo">Undo</button>
@@ -452,12 +479,19 @@
               <div style="font-weight: 800; margin-bottom: 8px">
                 Controls
               </div>
-              <div style="color: var(--muted); font-size: 13px; line-height: 1.6">
-                • Click a cell, then use keypad or 1–9 keys. Backspace/Delete
-                clears. <br />
-                • Toggle Notes (N), Auto-notes (A). <br />
-                • Arrow keys to move. Ctrl/Cmd+Z undo, Ctrl/Cmd+Y redo. <br />
-                • H for hint. M to toggle mistakes view. C to toggle conflicts.
+              <div
+                style="
+                  color: var(--muted);
+                  font-size: 13px;
+                  line-height: 1.6;
+                "
+              >
+                • Tap a cell, then use the keypad. Backspace/Delete clears on
+                desktop. <br />
+                • Long‑press a cell to toggle Notes mode on mobile. <br />
+                • Arrow keys move. Ctrl/Cmd+Z undo, Ctrl/Cmd+Y redo. <br />
+                • N = Notes, A = Auto‑notes, H = Hint, M = Mistakes, C =
+                Conflicts.
               </div>
             </div>
           </div>
@@ -465,19 +499,18 @@
       </div>
 
       <div class="footer">
-        Made with care. All in one file. Your progress is saved locally.
+        Fully responsive. Your progress is saved locally.
       </div>
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
-      // Data model and helpers
+      // Utilities and state
       const SIZE = 9;
       const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
       const $ = (sel) => document.querySelector(sel);
-      const $$ = (sel) => document.querySelectorAll(sel);
 
       function deepCopy(grid) {
         return grid.map((row) => row.slice());
@@ -497,8 +530,12 @@
         );
       }
 
-      function inBounds(r, c) {
-        return r >= 0 && r < SIZE && c >= 0 && c < SIZE;
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
       }
 
       function peersOf(r, c) {
@@ -516,14 +553,6 @@
         }
         peers.delete(`${r},${c}`);
         return Array.from(peers).map((s) => s.split(",").map((n) => +n));
-      }
-
-      function shuffle(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
       }
 
       function isSafe(grid, r, c, n) {
@@ -662,7 +691,7 @@
       function difficultyTarget(diff) {
         switch (diff) {
           case "easy":
-            return 40; // clues
+            return 40;
           case "medium":
             return 32;
           case "hard":
@@ -686,16 +715,13 @@
           const prev1 = puzzle[r1][c1];
           const prev2 = puzzle[r2][c2];
 
-          // If already empty, skip pair
           if (prev1 === 0 && prev2 === 0) continue;
 
-          // Remove both (if same cell like centre, remove once)
           puzzle[r1][c1] = 0;
           if (!(r1 === r2 && c1 === c2)) puzzle[r2][c2] = 0;
 
           const solutions = solveCount(puzzle, 2);
           if (solutions !== 1) {
-            // revert
             puzzle[r1][c1] = prev1;
             if (!(r1 === r2 && c1 === c2)) puzzle[r2][c2] = prev2;
           } else {
@@ -704,15 +730,6 @@
         }
 
         return puzzle;
-      }
-
-      function equalsGrid(a, b) {
-        for (let r = 0; r < SIZE; r++) {
-          for (let c = 0; c < SIZE; c++) {
-            if (a[r][c] !== b[r][c]) return false;
-          }
-        }
-        return true;
       }
 
       function computeCandidates(grid) {
@@ -745,7 +762,6 @@
       function hiddenSingle(grid) {
         const cand = computeCandidates(grid);
 
-        // Rows
         for (let r = 0; r < SIZE; r++) {
           for (let d = 1; d <= 9; d++) {
             const spots = [];
@@ -761,7 +777,6 @@
           }
         }
 
-        // Cols
         for (let c = 0; c < SIZE; c++) {
           for (let d = 1; d <= 9; d++) {
             const spots = [];
@@ -777,7 +792,6 @@
           }
         }
 
-        // Boxes
         for (let br = 0; br < 3; br++) {
           for (let bc = 0; bc < 3; bc++) {
             for (let d = 1; d <= 9; d++) {
@@ -807,13 +821,12 @@
         return null;
       }
 
-      // App state
       const state = {
         puzzle: emptyGrid(),
         solution: emptyGrid(),
         grid: emptyGrid(),
         notes: emptyNotes(),
-        selected: null, // {r,c}
+        selected: null,
         settings: {
           noteMode: false,
           autoNotes: false,
@@ -832,7 +845,6 @@
         mistakes: 0,
       };
 
-      // DOM build
       const boardEl = $("#board");
       const keypadEl = $("#keypad");
       const timerEl = $("#timer");
@@ -845,6 +857,7 @@
         setTimeout(() => toastEl.classList.remove("show"), 1600);
       }
 
+      // Build UI
       function buildBoard() {
         boardEl.innerHTML = "";
         for (let r = 0; r < SIZE; r++) {
@@ -853,12 +866,9 @@
             cell.className = "cell";
             cell.dataset.row = r;
             cell.dataset.col = c;
-            cell.setAttribute("role", "button");
+            cell.setAttribute("role", "gridcell");
             cell.setAttribute("tabindex", "0");
-            cell.setAttribute(
-              "aria-label",
-              `Cell r${r + 1} c${c + 1}`
-            );
+            cell.setAttribute("aria-label", `Cell r${r + 1} c${c + 1}`);
 
             const num = document.createElement("div");
             num.className = "num";
@@ -877,6 +887,14 @@
 
             cell.addEventListener("click", () => onCellClick(r, c));
             cell.addEventListener("keydown", (e) => onCellKey(e, r, c));
+            cell.addEventListener(
+              "touchstart",
+              (e) => onCellTouchStart(e, r, c),
+              { passive: true }
+            );
+            cell.addEventListener("touchend", onCellTouchEnd, {
+              passive: true,
+            });
 
             boardEl.appendChild(cell);
           }
@@ -890,25 +908,25 @@
           btn.className = "digit";
           btn.textContent = d;
           btn.dataset.d = d;
+          btn.setAttribute("aria-label", `Number ${d}`);
           const rem = document.createElement("span");
           rem.className = "remain";
           rem.textContent = "9";
           btn.appendChild(rem);
-          btn.addEventListener("click", () => onDigit(d));
+          btn.addEventListener("click", () => onDigit(d, true));
           keypadEl.appendChild(btn);
         }
-        // Clear / 0
         const clr = document.createElement("button");
         clr.className = "digit";
         clr.textContent = "⌫";
         clr.title = "Clear (Backspace/Delete)";
-        clr.addEventListener("click", () => onDigit(0));
+        clr.setAttribute("aria-label", "Clear");
+        clr.addEventListener("click", () => onDigit(0, true));
         keypadEl.appendChild(clr);
       }
 
       // Rendering
       function render() {
-        // Cells
         for (let r = 0; r < SIZE; r++) {
           for (let c = 0; c < SIZE; c++) {
             const idx = r * SIZE + c;
@@ -927,7 +945,6 @@
                 state.selected.c === c
             );
 
-            // row/col/box highlights
             const sel = state.selected;
             const sameRow = sel && sel.r === r;
             const sameCol = sel && sel.c === c;
@@ -936,11 +953,10 @@
               Math.floor(sel.r / 3) === Math.floor(r / 3) &&
               Math.floor(sel.c / 3) === Math.floor(c / 3);
             const highlight =
-              (sameRow || sameCol || sameBox) && !(sel && sel.r === r && sel.c === c);
-
+              (sameRow || sameCol || sameBox) &&
+              !(sel && sel.r === r && sel.c === c);
             cell.classList.toggle("highlight", !!highlight);
 
-            // same number highlight
             let sameNum = false;
             if (sel) {
               const selVal = state.grid[sel.r][sel.c];
@@ -948,14 +964,12 @@
             }
             cell.classList.toggle("same", sameNum);
 
-            // conflicts
             const conflict = hasConflict(state.grid, r, c);
             cell.classList.toggle(
               "conflict",
               conflict && state.settings.showConflicts && val !== 0
             );
 
-            // mistakes (compare to solution)
             const wrong =
               val !== 0 &&
               state.solution &&
@@ -966,7 +980,6 @@
               wrong && state.settings.showMistakes
             );
 
-            // number or notes
             if (val !== 0) {
               numEl.textContent = val;
               numEl.style.visibility = "visible";
@@ -984,19 +997,16 @@
           }
         }
 
-        // keypad remaining counts
         const counts = digitCounts(state.grid);
-        const kbtns = keypadEl.querySelectorAll(".digit");
-        kbtns.forEach((btn) => {
+        keypadEl.querySelectorAll(".digit").forEach((btn) => {
           const d = +btn.dataset.d;
           const rem = btn.querySelector(".remain");
-          if (!rem) return;
+          if (!rem || !d) return;
           const used = counts[d] || 0;
           rem.textContent = String(9 - used);
           btn.style.opacity = used >= 9 ? 0.35 : 1;
         });
 
-        // toggles
         $("#noteMode").classList.toggle("on", state.settings.noteMode);
         $("#autoNotes").classList.toggle("on", state.settings.autoNotes);
         $("#showConflicts").classList.toggle(
@@ -1005,14 +1015,12 @@
         );
         $("#showMistakes").classList.toggle("on", state.settings.showMistakes);
 
-        // timer + mistakes
         mistakesEl.textContent = `Mistakes: ${state.mistakes}`;
       }
 
       function hasConflict(grid, r, c) {
         const v = grid[r][c];
         if (v === 0) return false;
-        // same row/col/box duplicates
         for (let i = 0; i < SIZE; i++) {
           if (i !== c && grid[r][i] === v) return true;
           if (i !== r && grid[i][c] === v) return true;
@@ -1040,7 +1048,7 @@
         return map;
       }
 
-      // Notes helpers
+      // Notes
       function fillAutoNotes() {
         const cand = computeCandidates(state.grid);
         for (let r = 0; r < SIZE; r++) {
@@ -1065,14 +1073,42 @@
       }
 
       // Selection and input
+      let longPressTimer = null;
+
+      function haptic(ms = 8) {
+        try {
+          if (navigator.vibrate) navigator.vibrate(ms);
+        } catch {}
+      }
+
       function onCellClick(r, c) {
-        if (state.selected && state.selected.r === r && state.selected.c === c) {
-          // second click toggles note mode quick?
-          // keep as select only
-        } else {
-          state.selected = { r, c };
-          render();
+        if (
+          state.selected &&
+          state.selected.r === r &&
+          state.selected.c === c
+        ) {
+          return;
         }
+        state.selected = { r, c };
+        render();
+      }
+
+      function onCellTouchStart(e, r, c) {
+        onCellClick(r, c);
+        if (e.touches && e.touches.length > 1) return;
+        clearTimeout(longPressTimer);
+        longPressTimer = setTimeout(() => {
+          state.settings.noteMode = !state.settings.noteMode;
+          render();
+          showToast(
+            state.settings.noteMode ? "Notes on" : "Notes off"
+          );
+          haptic();
+        }, 420);
+      }
+
+      function onCellTouchEnd() {
+        clearTimeout(longPressTimer);
       }
 
       function onCellKey(e, r, c) {
@@ -1119,13 +1155,12 @@
         r = Math.max(0, Math.min(8, r));
         c = Math.max(0, Math.min(8, c));
         state.selected = { r, c };
-        // focus corresponding element for screen readers
         const idx = r * SIZE + c;
         boardEl.children[idx].focus();
         render();
       }
 
-      function onDigit(d) {
+      function onDigit(d, fromKeypad = false) {
         if (!state.selected) {
           showToast("Select a cell first");
           return;
@@ -1136,10 +1171,10 @@
           return;
         }
 
+        if (fromKeypad) haptic();
+
         if (state.settings.noteMode && state.grid[r][c] === 0) {
-          // toggle note
           if (d === 0) {
-            // clear all notes
             pushUndo({
               t: "notesClear",
               r,
@@ -1150,13 +1185,7 @@
           } else {
             const prev = state.notes[r][c].slice();
             state.notes[r][c][d] = !state.notes[r][c][d];
-            pushUndo({
-              t: "note",
-              r,
-              c,
-              d,
-              prev,
-            });
+            pushUndo({ t: "note", r, c, d, prev });
           }
           render();
           saveState();
@@ -1165,7 +1194,6 @@
 
         const prevVal = state.grid[r][c];
         const prevNotes = state.notes[r][c].slice();
-
         if (d === prevVal) return;
 
         pushUndo({
@@ -1179,10 +1207,8 @@
 
         state.grid[r][c] = d;
         if (d === 0) {
-          // cleared: optional re-add auto-notes if enabled
           if (state.settings.autoNotes) fillAutoNotes();
         } else {
-          // entering a digit
           state.notes[r][c] = Array.from({ length: 10 }, () => false);
           if (state.settings.autoNotes) clearPeerNotes(r, c, d);
           if (state.settings.showMistakes && state.solution) {
@@ -1196,7 +1222,6 @@
         render();
         saveState();
 
-        // Check solved
         if (equalsGrid(state.grid, state.solution)) {
           stopTimer();
           showToast("Solved! Well done");
@@ -1245,6 +1270,9 @@
             { length: 10 },
             () => false
           );
+        } else if (op.t === "bulk") {
+          state.grid = deepCopy(op.nextGrid);
+          state.notes = JSON.parse(JSON.stringify(op.nextNotes));
         }
       }
 
@@ -1256,10 +1284,13 @@
           state.notes[op.r][op.c] = op.prev.slice();
         } else if (op.t === "notesClear") {
           state.notes[op.r][op.c] = op.prev.slice();
+        } else if (op.t === "bulk") {
+          state.grid = deepCopy(op.prevGrid);
+          state.notes = JSON.parse(JSON.stringify(op.prevNotes));
         }
       }
 
-      // Buttons and toggles
+      // Buttons / toggles
       function toggleNoteMode() {
         state.settings.noteMode = !state.settings.noteMode;
         render();
@@ -1287,11 +1318,10 @@
 
       function onErase() {
         if (!state.selected) return;
-        onDigit(0);
+        onDigit(0, true);
       }
 
       function onCheck() {
-        // Toggle mistakes view briefly if off
         if (!state.settings.showMistakes) {
           state.settings.showMistakes = true;
           render();
@@ -1312,6 +1342,8 @@
           t: "bulk",
           prevGrid: deepCopy(state.grid),
           prevNotes: JSON.parse(JSON.stringify(state.notes)),
+          nextGrid: deepCopy(state.solution),
+          nextNotes: emptyNotes(),
         });
         state.grid = deepCopy(state.solution);
         state.notes = emptyNotes();
@@ -1323,10 +1355,7 @@
 
       function onHint() {
         const g = state.grid;
-        const step =
-          nakedSingle(g) ||
-          hiddenSingle(g) ||
-          null;
+        const step = nakedSingle(g) || hiddenSingle(g) || null;
 
         if (!step) {
           showToast("No simple hints available");
@@ -1334,9 +1363,8 @@
         }
 
         const { r, c, n, type } = step;
-        // Select and fill number
         state.selected = { r, c };
-        onDigit(n);
+        onDigit(n, true);
         showToast(`${type}: r${r + 1} c${c + 1} is ${n}`);
       }
 
@@ -1352,6 +1380,7 @@
         clearInterval(state.timer.interval);
         state.timer.interval = setInterval(updateTimer, 250);
         updateTimer();
+        $("#pauseBtn").textContent = "Pause";
       }
 
       function stopTimer() {
@@ -1389,7 +1418,7 @@
       }
 
       // Save / Load
-      const STORAGE_KEY = "sudoku-state-v2";
+      const STORAGE_KEY = "sudoku-state-v3";
 
       function saveState() {
         const data = {
@@ -1434,7 +1463,6 @@
 
           $("#difficulty").value = state.difficulty;
 
-          // Resume/pause timer
           if (equalsGrid(state.grid, state.solution)) {
             stopTimer();
           } else if (state.timer.paused) {
@@ -1442,7 +1470,6 @@
             $("#pauseBtn").textContent = "Resume";
           } else {
             startTimer(false);
-            $("#pauseBtn").textContent = "Pause";
           }
 
           return true;
@@ -1453,7 +1480,6 @@
 
       // New game
       async function newGame(diff) {
-        // Busy UI
         $("#newGame").disabled = true;
         $("#newGame").textContent = "Generating…";
         try {
@@ -1478,14 +1504,21 @@
           $("#difficulty").value = diff;
 
           startTimer(true);
-          $("#pauseBtn").textContent = "Pause";
-
           render();
           saveState();
         } finally {
           $("#newGame").disabled = false;
           $("#newGame").textContent = "New game";
         }
+      }
+
+      function equalsGrid(a, b) {
+        for (let r = 0; r < SIZE; r++) {
+          for (let c = 0; c < SIZE; c++) {
+            if (a[r][c] !== b[r][c]) return false;
+          }
+        }
+        return true;
       }
 
       // Events
@@ -1495,11 +1528,8 @@
       });
 
       $("#pauseBtn").addEventListener("click", () => {
-        if (state.timer.paused) {
-          resumeTimer();
-        } else {
-          pauseTimer();
-        }
+        if (state.timer.paused) resumeTimer();
+        else pauseTimer();
       });
 
       $("#difficulty").addEventListener("change", (e) => {
@@ -1538,95 +1568,13 @@
           onDigit(0);
         }
       }
-
       document.addEventListener("keydown", onDigitKey);
-
-      function onDigit(d) {
-        // delegate to earlier function defined already
-        // To avoid shadowing, the earlier onDigit is hoisted.
-        // This wrapper is only to satisfy Prettier line width.
-        return window.__onDigit(d);
-      }
-
-      // Rebind the actual onDigit to global to keep call sites intact
-      window.__onDigit = function (d) {
-        // actual logic lives here; copied from earlier onDigit def
-        if (!state.selected) {
-          showToast("Select a cell first");
-          return;
-        }
-        const { r, c } = state.selected;
-        if (state.puzzle[r][c] !== 0) {
-          showToast("That cell is fixed");
-          return;
-        }
-
-        if (state.settings.noteMode && state.grid[r][c] === 0) {
-          if (d === 0) {
-            pushUndo({
-              t: "notesClear",
-              r,
-              c,
-              prev: state.notes[r][c].slice(),
-            });
-            state.notes[r][c] = Array.from({ length: 10 }, () => false);
-          } else {
-            const prev = state.notes[r][c].slice();
-            state.notes[r][c][d] = !state.notes[r][c][d];
-            pushUndo({
-              t: "note",
-              r,
-              c,
-              d,
-              prev,
-            });
-          }
-          render();
-          saveState();
-          return;
-        }
-
-        const prevVal = state.grid[r][c];
-        const prevNotes = state.notes[r][c].slice();
-        if (d === prevVal) return;
-
-        pushUndo({
-          t: "set",
-          r,
-          c,
-          prev: prevVal,
-          next: d,
-          prevNotes,
-        });
-
-        state.grid[r][c] = d;
-        if (d === 0) {
-          if (state.settings.autoNotes) fillAutoNotes();
-        } else {
-          state.notes[r][c] = Array.from({ length: 10 }, () => false);
-          if (state.settings.autoNotes) clearPeerNotes(r, c, d);
-          if (state.settings.showMistakes && state.solution) {
-            if (d !== state.solution[r][c]) {
-              state.mistakes++;
-              showToast("Mistake recorded");
-            }
-          }
-        }
-        render();
-        saveState();
-
-        if (equalsGrid(state.grid, state.solution)) {
-          stopTimer();
-          showToast("Solved! Well done");
-        }
-      };
 
       // Init
       buildBoard();
       buildKeypad();
 
       if (!loadState()) {
-        // first visit
         newGame("medium");
       } else {
         render();
